@@ -1,0 +1,98 @@
+---
+title: "A3.Rmd"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+library(factoextra)
+pdf("silhouettemethod.pdf",paper="special",width=15,height=8)
+fviz_nbclust(euro, kmeans, nstart=25, method="silhouette")
+fviz_nbclust(euro, hcut, nstart=25, method="silhouette")
+```
+
+```{r}
+km = kmeans(euro, 2, nstart=25)
+km
+
+hc = hclust(dist(euro))
+cutree(hc,2)
+
+```
+
+```{r}
+loc = cmdscale(dist(euro))
+
+x = loc[,1]
+y = loc[,2]
+pdf("CMDS1.pdf",paper="special",width=15,height=8)
+plot(x,y,pch=20, asp=1, xlab="", ylab="")
+text(x,y-0.005, rownames(euro),cex=0.6)
+euro[28,] #main outlier way above the mean for Industry and quite above on Financial.
+euro[15,] #secondary outlier quite above the mean on Financial.
+apply(euro,2,mean)
+
+```
+
+```{r}
+pdf("silhouettegap.pdf",paper="special",width=15,height=8)
+fviz_nbclust(euro, kmeans, nstart=25, method="gap",nboot=50)
+fviz_nbclust(euro, hcut, nstart=25, method="gap",nboot=50)
+```
+
+
+```{r}
+#Question 2
+
+d
+party
+
+D = as.dist(d)
+loc1 = cmdscale(D)
+loc1
+
+x1 = loc1[,1]
+y1 = loc1[,2]
+pdf("2drep.pdf",paper="special",width=15,height=8)
+plot(x1,y1,pch=20,asp=1,xlab="",ylab="")
+text(x1+0.5,y1, party,cex=0.6)
+
+loc2 = cmdscale(D,k=1)
+loc2
+plot(loc2[,1],pch=20,asp=1,xlab="",ylab="")
+text(loc2[,1]+1, party,cex=0.6)
+#all negative values except for Rinaldo are Democrats. Conclusion very similar to 2-dimensional representation. 
+```
+
+```{r}
+#Kruskal's non-metric MDS
+library(MASS)
+loc3 = isoMDS(D)
+loc3
+x3 = loc3$points[,1]
+y3 = loc3$points[,2]
+pdf("kruskal.pdf",paper="special",width=15,height=8)
+plot(x3,y3,pch=20, asp=1,xlab="",ylab="")
+text(x3+0.6,y3, party,cex=0.6)
+```
+
+```{r}
+#Sammon's nonlinear MDS
+loc4 = sammon(D)
+loc4
+x4 = loc4$points[,1]
+y4 = loc4$points[,2]
+pdf("sammon.pdf",paper="special",width=15,height=8)
+plot(x4,y4,pch=20, asp=1,xlab="",ylab="")
+text(x4+0.7,y4, party,cex=0.6)
+```
+
